@@ -597,6 +597,18 @@
     .workout-input:not(.workout-num) { flex: 1 1 100%; }
     .workout-num { flex: 1 1 25%; }
   }
+
+  /* ── Workout history ─────────────────────────────────────────────────────── */
+  .workout-session { display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid var(--color-border-light); padding-bottom: 14px; margin-bottom: 14px; }
+  .workout-session:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .workout-session-date { font-size: .72rem; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--color-text-muted); }
+  .workout-session-time { font-size: .68rem; color: var(--color-text-muted); }
+  .workout-exercise-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+  .workout-exercise-table th { text-align: left; font-size: .65rem; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--color-text-muted); padding: 4px 6px 4px 0; }
+  .workout-exercise-table td { padding: 4px 6px 4px 0; color: var(--color-text-body); }
+  .workout-exercise-table tr:not(:last-child) td { border-bottom: 1px solid var(--color-border-light); }
+  .workout-exercise-name { font-weight: 600; color: var(--color-text-primary); }
+  .workout-history-empty { color: var(--color-text-muted); font-size: .85rem; font-style: italic; text-align: center; padding: 24px 0; }
 </style>
 </head>
 <body>
@@ -651,7 +663,10 @@
     <div class="quadrant q-health">
       <div class="quadrant-header">
         <span class="quadrant-title">Health</span>
-        <button class="btn-clear" id="health-history-btn" onclick="toggleHealthHistory()">History</button>
+        <span style="display:flex;gap:6px">
+          <button class="btn-clear" onclick="openWorkoutHistory()">Workouts</button>
+          <button class="btn-clear" id="health-history-btn" onclick="toggleHealthHistory()">History</button>
+        </span>
       </div>
 
       <!-- Meal prompt (conditional) -->
@@ -735,6 +750,16 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<div class="modal-overlay" id="workout-history-overlay" style="display:none" onclick="handleHistoryOverlayClick(event)">
+  <div class="workout-modal" id="workout-history-modal">
+    <div class="workout-modal-header">
+      <span>💪 Workout History</span>
+      <button class="workout-close" onclick="closeWorkoutHistory()">×</button>
+    </div>
+    <div id="workout-history-list"></div>
   </div>
 </div>
 
@@ -1211,6 +1236,53 @@ function closeQuiz() {
     timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
   });
 })();
+
+// ─── Workout history ──────────────────────────────────────────────────────────
+function openWorkoutHistory() {
+  const log = JSON.parse(localStorage.getItem('workout_log') || '[]');
+  const el = document.getElementById('workout-history-list');
+
+  if (!log.length) {
+    el.innerHTML = '<div class="workout-history-empty">No workouts logged yet</div>';
+  } else {
+    // Newest first
+    const sessions = log.slice().reverse();
+    el.innerHTML = sessions.map(s => {
+      const d = new Date(s.timestamp);
+      const dateStr = d.toLocaleDateString('en-US', {
+        timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+      });
+      const timeStr = d.toLocaleTimeString('en-US', {
+        timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', hour12: true
+      });
+      const rows = s.exercises.map(e => `
+        <tr>
+          <td class="workout-exercise-name">${escHtml(e.name)}</td>
+          <td>${escHtml(e.sets || '—')}</td>
+          <td>${escHtml(e.reps || '—')}</td>
+          <td>${e.weight ? escHtml(e.weight) + ' lbs' : '—'}</td>
+        </tr>`).join('');
+      return `<div class="workout-session">
+        <div class="workout-session-date">${escHtml(dateStr)}</div>
+        <div class="workout-session-time">${escHtml(timeStr)}</div>
+        <table class="workout-exercise-table">
+          <thead><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('workout-history-overlay').style.display = 'flex';
+}
+
+function closeWorkoutHistory() {
+  document.getElementById('workout-history-overlay').style.display = 'none';
+}
+
+function handleHistoryOverlayClick(e) {
+  if (e.target === document.getElementById('workout-history-overlay')) closeWorkoutHistory();
+}
 
 // ─── Workout modal ────────────────────────────────────────────────────────────
 function openWorkoutModal() {
