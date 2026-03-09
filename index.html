@@ -3,80 +3,169 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Todo App</title>
+<title>Roark's Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #f0f2f5;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(160deg, #f8fafc 0%, #f1f5f9 100%);
     min-height: 100vh;
-    padding: 16px;
+    padding: 0;
+    color: #1e293b;
   }
 
-  h1 {
-    text-align: center;
-    color: #1a1a2e;
-    margin-bottom: 16px;
-    font-size: 1.5rem;
+  /* ── Header ─────────────────────────────────────────────────────────────── */
+  .site-header {
+    background: #0f172a;
+    padding: 0 32px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .site-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .site-header-logo {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
     font-weight: 700;
+    color: #fff;
     letter-spacing: -0.5px;
+    flex-shrink: 0;
   }
 
+  .site-header-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #f8fafc;
+    letter-spacing: -0.3px;
+  }
+
+  .site-header-date {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #94a3b8;
+    letter-spacing: 0.2px;
+  }
+
+  /* ── Page body ───────────────────────────────────────────────────────────── */
+  .page-body {
+    padding: 28px 24px 40px;
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+
+  /* ── Grid ────────────────────────────────────────────────────────────────── */
   .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
-    gap: 16px;
-    max-width: 1100px;
-    margin: 0 auto;
+    gap: 20px;
   }
 
+  /* ── Quadrant card ───────────────────────────────────────────────────────── */
   .quadrant {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 22px 22px 20px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    min-height: 300px;
+    gap: 14px;
+    min-height: 320px;
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 4px 12px rgba(15, 23, 42, 0.06),
+      0 12px 32px rgba(15, 23, 42, 0.05);
+    border-top: 4px solid transparent;
+    transition: box-shadow 0.2s ease;
   }
 
+  .quadrant:hover {
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.05),
+      0 6px 18px rgba(15, 23, 42, 0.09),
+      0 18px 40px rgba(15, 23, 42, 0.07);
+  }
+
+  .q-daily    { border-top-color: #6366f1; }
+  .q-longterm { border-top-color: #10b981; }
+  .q-other    { border-top-color: #f59e0b; }
+  .q-french   { border-top-color: #f43f5e; }
+
+  /* ── Quadrant header ─────────────────────────────────────────────────────── */
   .quadrant-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 2px solid;
-    padding-bottom: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
   }
 
   .quadrant-title {
-    font-size: 0.85rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 1.2px;
     text-transform: uppercase;
   }
 
-  /* Per-quadrant accent colors */
-  .q-daily .quadrant-header { border-color: #6c63ff; }
-  .q-daily .quadrant-title { color: #6c63ff; }
+  .q-daily    .quadrant-title { color: #6366f1; }
+  .q-longterm .quadrant-title { color: #10b981; }
+  .q-other    .quadrant-title { color: #f59e0b; }
+  .q-french   .quadrant-title { color: #f43f5e; }
 
-  .q-longterm .quadrant-header { border-color: #22c55e; }
-  .q-longterm .quadrant-title { color: #22c55e; }
+  /* ── Task count badge ────────────────────────────────────────────────────── */
+  .count-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: #f1f5f9;
+    color: #64748b;
+    border-radius: 20px;
+    padding: 2px 8px;
+    margin-right: 6px;
+    letter-spacing: 0;
+  }
 
-  .q-other .quadrant-header { border-color: #f59e0b; }
-  .q-other .quadrant-title { color: #f59e0b; }
+  /* ── Daily progress bar ──────────────────────────────────────────────────── */
+  .daily-progress-wrap {
+    height: 4px;
+    background: #e2e8f0;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: -8px;
+  }
 
-  .q-french .quadrant-header { border-color: #ef4444; }
-  .q-french .quadrant-title { color: #ef4444; }
+  .daily-progress-bar {
+    height: 100%;
+    background: #6366f1;
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
 
-  /* Todo list */
+  /* ── Todo list ───────────────────────────────────────────────────────────── */
   .todo-list {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
     flex: 1;
     overflow-y: auto;
     max-height: 220px;
@@ -85,169 +174,304 @@
   .todo-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border-radius: 6px;
-    background: #f8f9fa;
-    transition: background 0.15s;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #f8fafc;
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    cursor: default;
   }
 
-  .todo-item:hover { background: #f0f2f5; }
+  .todo-item:hover {
+    background: #f0f4ff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+  }
 
+  .q-longterm .todo-item:hover {
+    background: #f0fdf8;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.08);
+  }
+
+  .q-other .todo-item:hover {
+    background: #fffbeb;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.08);
+  }
+
+  .q-french .todo-item:hover {
+    background: #fff1f4;
+    box-shadow: 0 2px 8px rgba(244, 63, 94, 0.08);
+  }
+
+  /* Drag handle */
+  .drag-handle {
+    color: #cbd5e1;
+    cursor: grab;
+    font-size: 1rem;
+    flex-shrink: 0;
+    user-select: none;
+    line-height: 1;
+    padding: 0 2px;
+    transition: color 0.15s;
+  }
+
+  .drag-handle:active { cursor: grabbing; }
+  .todo-item:hover .drag-handle { color: #94a3b8; }
+
+  .todo-item.drag-over {
+    outline: 2px dashed #6366f1;
+    outline-offset: -2px;
+    background: #eef2ff;
+  }
+
+  .q-longterm .todo-item.drag-over { outline-color: #10b981; background: #ecfdf5; }
+  .q-other    .todo-item.drag-over { outline-color: #f59e0b; background: #fffbeb; }
+  .q-french   .todo-item.drag-over { outline-color: #f43f5e; background: #fff1f4; }
+
+  .todo-item.dragging { opacity: 0.4; }
+
+  /* ── Custom checkboxes ───────────────────────────────────────────────────── */
   .todo-item input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border-radius: 5px;
+    border: 2px solid #cbd5e1;
+    background: #fff;
     cursor: pointer;
-    accent-color: #6c63ff;
+    position: relative;
+    transition: background 0.15s ease, border-color 0.15s ease;
     flex-shrink: 0;
   }
 
-  .q-longterm .todo-item input[type="checkbox"] { accent-color: #22c55e; }
-  .q-other .todo-item input[type="checkbox"] { accent-color: #f59e0b; }
+  .todo-item input[type="checkbox"]::after {
+    content: '';
+    position: absolute;
+    display: none;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+  }
 
+  .todo-item input[type="checkbox"]:checked::after { display: block; }
+
+  .q-daily    .todo-item input[type="checkbox"]:checked { background: #6366f1; border-color: #6366f1; }
+  .q-longterm .todo-item input[type="checkbox"]:checked { background: #10b981; border-color: #10b981; }
+  .q-other    .todo-item input[type="checkbox"]:checked { background: #f59e0b; border-color: #f59e0b; }
+  .q-french   .todo-item input[type="checkbox"]:checked { background: #f43f5e; border-color: #f43f5e; }
+
+  .todo-item input[type="checkbox"]:hover:not(:checked) { border-color: #94a3b8; }
+
+  /* ── Todo text ───────────────────────────────────────────────────────────── */
   .todo-text {
     flex: 1;
-    font-size: 0.9rem;
-    color: #333;
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: #334155;
     word-break: break-word;
+    line-height: 1.4;
   }
 
   .todo-text.done {
     text-decoration: line-through;
-    color: #aaa;
+    opacity: 0.4;
   }
 
+  /* ── Delete button ───────────────────────────────────────────────────────── */
   .btn-delete {
     background: none;
     border: none;
-    color: #ccc;
+    color: #cbd5e1;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.1rem;
     line-height: 1;
-    padding: 2px 4px;
-    border-radius: 4px;
-    transition: color 0.15s;
+    padding: 2px 5px;
+    border-radius: 5px;
+    transition: color 0.15s ease, background 0.15s ease;
     flex-shrink: 0;
   }
 
-  .btn-delete:hover { color: #ef4444; }
+  .btn-delete:hover { color: #f43f5e; background: #fff1f4; }
 
-  /* Input forms */
-  .todo-form {
-    display: flex;
-    gap: 6px;
+  /* ── Clear done button ───────────────────────────────────────────────────── */
+  .btn-clear {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 4px 9px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 6px;
+    background: none;
+    cursor: pointer;
+    color: #94a3b8;
+    transition: all 0.15s ease;
+    letter-spacing: 0.1px;
   }
+
+  .btn-clear:hover { background: #f8fafc; color: #475569; border-color: #cbd5e1; }
+
+  /* ── Input forms ─────────────────────────────────────────────────────────── */
+  .todo-form { display: flex; gap: 8px; }
 
   .todo-input {
     flex: 1;
-    padding: 7px 10px;
-    border: 1.5px solid #e0e0e0;
-    border-radius: 7px;
-    font-size: 0.88rem;
+    padding: 8px 12px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
     outline: none;
-    transition: border-color 0.15s;
-    background: #fafafa;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    background: #fafbfc;
+    color: #1e293b;
   }
 
-  .todo-input:focus { border-color: #6c63ff; background: #fff; }
-  .q-longterm .todo-input:focus { border-color: #22c55e; }
-  .q-other .todo-input:focus { border-color: #f59e0b; }
-  .q-french .todo-input:focus { border-color: #ef4444; }
+  .todo-input::placeholder { color: #94a3b8; }
+  .todo-input:focus { background: #fff; border-color: transparent; }
 
+  .q-daily    .todo-input:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.18);  border-color: #6366f1; }
+  .q-longterm .todo-input:focus { box-shadow: 0 0 0 3px rgba(16,185,129,0.18);  border-color: #10b981; }
+  .q-other    .todo-input:focus { box-shadow: 0 0 0 3px rgba(245,158,11,0.18);  border-color: #f59e0b; }
+  .q-french   .todo-input:focus { box-shadow: 0 0 0 3px rgba(244,63,94,0.18);   border-color: #f43f5e; }
+
+  /* ── Add button ──────────────────────────────────────────────────────────── */
   .btn-add {
-    padding: 7px 14px;
+    padding: 8px 16px;
     border: none;
-    border-radius: 7px;
-    font-size: 0.88rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
     font-weight: 600;
     cursor: pointer;
-    background: #6c63ff;
     color: #fff;
-    transition: opacity 0.15s;
+    transition: filter 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+    white-space: nowrap;
   }
 
-  .btn-add:hover { opacity: 0.85; }
-  .q-longterm .btn-add { background: #22c55e; }
-  .q-other .btn-add { background: #f59e0b; }
-  .q-french .btn-add { background: #ef4444; }
+  .btn-add:hover   { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .btn-add:active  { transform: translateY(0); filter: brightness(0.96); }
 
-  .btn-clear {
-    font-size: 0.75rem;
-    padding: 3px 8px;
-    border: 1.5px solid #ddd;
-    border-radius: 5px;
-    background: none;
-    cursor: pointer;
-    color: #888;
-    transition: all 0.15s;
+  .q-daily    .btn-add { background: #6366f1; box-shadow: 0 2px 6px rgba(99,102,241,0.3); }
+  .q-longterm .btn-add { background: #10b981; box-shadow: 0 2px 6px rgba(16,185,129,0.3); }
+  .q-other    .btn-add { background: #f59e0b; box-shadow: 0 2px 6px rgba(245,158,11,0.3); }
+  .q-french   .btn-add { background: #f43f5e; box-shadow: 0 2px 6px rgba(244,63,94,0.3); }
+
+  /* ── Empty state ─────────────────────────────────────────────────────────── */
+  .empty-state {
+    color: #cbd5e1;
+    font-size: 0.82rem;
+    font-style: italic;
+    text-align: center;
+    padding: 24px 0 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
   }
 
-  .btn-clear:hover { background: #f5f5f5; color: #555; }
+  .empty-state::before {
+    content: '○';
+    font-size: 1.1rem;
+    font-style: normal;
+    color: #e2e8f0;
+  }
 
-  /* French section */
+  /* ── French streak box ───────────────────────────────────────────────────── */
   .streak-box {
     display: flex;
     align-items: center;
-    gap: 10px;
-    background: #fff5f5;
-    border: 1.5px solid #fca5a5;
-    border-radius: 8px;
-    padding: 10px 14px;
+    gap: 14px;
+    background: linear-gradient(135deg, #fff1f4 0%, #fef2f2 100%);
+    border: 1.5px solid #fecdd3;
+    border-radius: 12px;
+    padding: 14px 18px;
+    box-shadow: 0 2px 8px rgba(244, 63, 94, 0.08);
   }
 
-  .streak-icon { font-size: 1.5rem; }
+  .streak-icon {
+    font-size: 2.2rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 6px rgba(244, 63, 94, 0.35));
+  }
+
+  .streak-number-wrap { display: flex; flex-direction: column; line-height: 1; }
 
   .streak-count {
-    font-size: 1.4rem;
+    font-size: 2rem;
     font-weight: 700;
-    color: #ef4444;
+    color: #f43f5e;
+    letter-spacing: -1px;
+    line-height: 1;
   }
 
   .streak-label {
-    font-size: 0.78rem;
-    color: #888;
-    line-height: 1.3;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #fda4af;
+    letter-spacing: 0.3px;
+    margin-top: 3px;
+    text-transform: uppercase;
   }
 
   .streak-done-badge {
     margin-left: auto;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 600;
     background: #dcfce7;
     color: #16a34a;
-    border-radius: 5px;
-    padding: 3px 8px;
-    font-weight: 600;
+    border-radius: 20px;
+    padding: 4px 10px;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
   }
 
+  /* ── Practice button ─────────────────────────────────────────────────────── */
   .btn-practice {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     border: none;
-    border-radius: 7px;
-    font-size: 0.88rem;
+    border-radius: 9px;
+    font-size: 0.875rem;
+    font-family: 'Inter', sans-serif;
     font-weight: 600;
     cursor: pointer;
-    background: #ef4444;
+    background: #f43f5e;
     color: #fff;
-    transition: opacity 0.15s;
+    box-shadow: 0 2px 8px rgba(244, 63, 94, 0.3);
+    transition: filter 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
   }
 
-  .btn-practice:hover { opacity: 0.85; }
+  .btn-practice:hover:not(:disabled) {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(244, 63, 94, 0.35);
+  }
+
+  .btn-practice:active:not(:disabled) { transform: translateY(0); filter: brightness(0.96); }
+
   .btn-practice:disabled {
-    background: #e5e7eb;
-    color: #aaa;
+    background: #f1f5f9;
+    color: #94a3b8;
     cursor: default;
-    opacity: 1;
+    box-shadow: none;
   }
 
-  .vocab-section { display: flex; flex-direction: column; gap: 8px; }
+  /* ── Vocab section ───────────────────────────────────────────────────────── */
+  .vocab-section { display: flex; flex-direction: column; gap: 10px; }
 
   .vocab-section-title {
-    font-size: 0.75rem;
+    font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     text-transform: uppercase;
-    color: #999;
+    color: #94a3b8;
   }
 
   .vocab-list {
@@ -255,7 +479,7 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-    max-height: 140px;
+    max-height: 130px;
     overflow-y: auto;
   }
 
@@ -263,134 +487,272 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #fafafa;
-    border-radius: 6px;
-    padding: 5px 8px;
-    font-size: 0.88rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 0.85rem;
+    transition: background 0.15s ease, transform 0.15s ease;
   }
 
-  .vocab-pair { color: #333; }
-  .vocab-fr { font-weight: 600; color: #ef4444; }
-  .vocab-arrow { color: #bbb; margin: 0 4px; }
-  .vocab-en { color: #555; }
+  .vocab-item:hover { background: #fff1f4; transform: translateY(-1px); }
 
-  .vocab-form {
-    display: flex;
-    gap: 6px;
-  }
+  .vocab-fr { font-weight: 600; color: #f43f5e; }
+  .vocab-arrow { color: #cbd5e1; margin: 0 5px; }
+  .vocab-en { color: #64748b; }
+
+  .vocab-form { display: flex; gap: 6px; }
 
   .vocab-form input {
     flex: 1;
-    padding: 6px 8px;
-    border: 1.5px solid #e0e0e0;
-    border-radius: 6px;
-    font-size: 0.83rem;
+    padding: 7px 10px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-family: 'Inter', sans-serif;
     outline: none;
-    background: #fafafa;
+    background: #fafbfc;
+    color: #1e293b;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
     min-width: 0;
   }
 
-  .vocab-form input:focus { border-color: #ef4444; background: #fff; }
+  .vocab-form input::placeholder { color: #94a3b8; }
+  .vocab-form input:focus { border-color: #f43f5e; background: #fff; box-shadow: 0 0 0 3px rgba(244,63,94,0.15); }
 
-  /* Scrollbar styling */
+  /* ── Quiz ────────────────────────────────────────────────────────────────── */
+  .btn-quiz {
+    width: 100%;
+    padding: 8px;
+    border: 1.5px solid #f43f5e;
+    border-radius: 9px;
+    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    background: #fff;
+    color: #f43f5e;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .btn-quiz:hover { background: #fff1f4; }
+
+  #quiz-panel {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    background: linear-gradient(135deg, #fff1f4 0%, #fef2f2 100%);
+    border: 1.5px solid #fecdd3;
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  #quiz-panel.active { display: flex; }
+
+  .quiz-word {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #f43f5e;
+    text-align: center;
+    letter-spacing: -0.5px;
+  }
+
+  .quiz-translation {
+    font-size: 1rem;
+    color: #475569;
+    text-align: center;
+    min-height: 1.5em;
+    font-weight: 500;
+  }
+
+  .quiz-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+  .quiz-actions button {
+    padding: 6px 16px;
+    border-radius: 7px;
+    border: none;
+    font-size: 0.82rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.15s, transform 0.1s;
+  }
+
+  .quiz-actions button:hover { filter: brightness(1.07); transform: translateY(-1px); }
+
+  #btn-quiz-reveal { background: #f43f5e; color: #fff; }
+  #btn-quiz-correct { background: #10b981; color: #fff; display: none; }
+  #btn-quiz-wrong   { background: #f59e0b; color: #fff; display: none; }
+  #btn-quiz-close   { background: #e2e8f0; color: #475569; }
+
+  .quiz-progress { font-size: 0.72rem; color: #94a3b8; text-align: center; }
+  .quiz-complete  { font-size: 1rem; font-weight: 700; color: #10b981; text-align: center; padding: 4px 0; }
+
+  /* ── Toast ───────────────────────────────────────────────────────────────── */
+  #toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 10px 20px;
+    border-radius: 9px;
+    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s;
+    z-index: 9999;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  }
+
+  #toast.show { opacity: 1; }
+
+  /* ── Scrollbars ──────────────────────────────────────────────────────────── */
   .todo-list::-webkit-scrollbar,
   .vocab-list::-webkit-scrollbar { width: 4px; }
   .todo-list::-webkit-scrollbar-track,
   .vocab-list::-webkit-scrollbar-track { background: transparent; }
   .todo-list::-webkit-scrollbar-thumb,
-  .vocab-list::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+  .vocab-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+  .todo-list::-webkit-scrollbar-thumb:hover,
+  .vocab-list::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
 
-  /* Empty state */
-  .empty-state {
-    color: #ccc;
-    font-size: 0.82rem;
-    text-align: center;
-    padding: 20px 0;
-    font-style: italic;
-  }
-
-  @media (max-width: 640px) {
-    body { padding: 10px; }
+  /* ── Mobile ──────────────────────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .site-header { padding: 0 18px; }
+    .page-body { padding: 18px 14px 32px; }
     .grid { grid-template-columns: 1fr; }
     .quadrant { min-height: auto; }
+    .streak-count { font-size: 1.6rem; }
+    .streak-icon { font-size: 1.8rem; }
   }
 </style>
 </head>
 <body>
-<h1>Dashboard</h1>
-<div class="grid">
 
-  <!-- DAILY -->
-  <div class="quadrant q-daily">
-    <div class="quadrant-header">
-      <span class="quadrant-title">Daily</span>
-      <button class="btn-clear" onclick="clearCompleted('daily')">Clear completed</button>
-    </div>
-    <ul class="todo-list" id="list-daily"></ul>
-    <form class="todo-form" onsubmit="handleAdd(event,'daily')">
-      <input class="todo-input" id="input-daily" placeholder="Add a task…" autocomplete="off">
-      <button class="btn-add" type="submit">Add</button>
-    </form>
+<header class="site-header">
+  <div class="site-header-brand">
+    <div class="site-header-logo">RC</div>
+    <span class="site-header-title">My Space</span>
   </div>
+  <span class="site-header-date" id="header-date"></span>
+</header>
 
-  <!-- LONG TERM -->
-  <div class="quadrant q-longterm">
-    <div class="quadrant-header">
-      <span class="quadrant-title">Long Term</span>
-    </div>
-    <ul class="todo-list" id="list-longterm"></ul>
-    <form class="todo-form" onsubmit="handleAdd(event,'longterm')">
-      <input class="todo-input" id="input-longterm" placeholder="Add a goal…" autocomplete="off">
-      <button class="btn-add" type="submit">Add</button>
-    </form>
-  </div>
+<div id="toast"></div>
 
-  <!-- OTHER -->
-  <div class="quadrant q-other">
-    <div class="quadrant-header">
-      <span class="quadrant-title">Other</span>
-    </div>
-    <ul class="todo-list" id="list-other"></ul>
-    <form class="todo-form" onsubmit="handleAdd(event,'other')">
-      <input class="todo-input" id="input-other" placeholder="Add a note…" autocomplete="off">
-      <button class="btn-add" type="submit">Add</button>
-    </form>
-  </div>
+<div class="page-body">
+  <div class="grid">
 
-  <!-- FRENCH -->
-  <div class="quadrant q-french">
-    <div class="quadrant-header">
-      <span class="quadrant-title">French</span>
-    </div>
-
-    <div class="streak-box" id="streak-box">
-      <span class="streak-icon">🔥</span>
-      <div>
-        <div class="streak-count" id="streak-count">0</div>
-        <div class="streak-label">day streak</div>
+    <!-- DAILY -->
+    <div class="quadrant q-daily">
+      <div class="quadrant-header">
+        <span class="quadrant-title">Daily</span>
+        <span>
+          <span class="count-badge" id="badge-daily" style="display:none"></span>
+          <button class="btn-clear" onclick="clearCompleted('daily')">Clear done</button>
+        </span>
       </div>
-      <span class="streak-done-badge" id="streak-done" style="display:none">✓ Done today</span>
-    </div>
-
-    <button class="btn-practice" id="btn-practice" onclick="markPractice()">Mark Practice Done</button>
-
-    <div class="vocab-section">
-      <div class="vocab-section-title">Vocabulary</div>
-      <ul class="vocab-list" id="vocab-list"></ul>
-      <form class="vocab-form" onsubmit="handleAddVocab(event)">
-        <input id="input-fr" placeholder="French…" autocomplete="off">
-        <input id="input-en" placeholder="English…" autocomplete="off">
+      <div class="daily-progress-wrap">
+        <div class="daily-progress-bar" id="daily-progress-bar"></div>
+      </div>
+      <ul class="todo-list" id="list-daily"></ul>
+      <form class="todo-form" onsubmit="handleAdd(event,'daily')">
+        <input class="todo-input" id="input-daily" placeholder="Add a task…" autocomplete="off">
         <button class="btn-add" type="submit">Add</button>
       </form>
     </div>
-  </div>
 
+    <!-- GOALS -->
+    <div class="quadrant q-longterm">
+      <div class="quadrant-header">
+        <span class="quadrant-title">Goals</span>
+        <span class="count-badge" id="badge-longterm" style="display:none"></span>
+      </div>
+      <ul class="todo-list" id="list-longterm"></ul>
+      <form class="todo-form" onsubmit="handleAdd(event,'longterm')">
+        <input class="todo-input" id="input-longterm" placeholder="Add a goal…" autocomplete="off">
+        <button class="btn-add" type="submit">Add</button>
+      </form>
+    </div>
+
+    <!-- OTHER -->
+    <div class="quadrant q-other">
+      <div class="quadrant-header">
+        <span class="quadrant-title">Other</span>
+        <span class="count-badge" id="badge-other" style="display:none"></span>
+      </div>
+      <ul class="todo-list" id="list-other"></ul>
+      <form class="todo-form" onsubmit="handleAdd(event,'other')">
+        <input class="todo-input" id="input-other" placeholder="Add a note…" autocomplete="off">
+        <button class="btn-add" type="submit">Add</button>
+      </form>
+    </div>
+
+    <!-- FRANÇAIS -->
+    <div class="quadrant q-french">
+      <div class="quadrant-header">
+        <span class="quadrant-title">Français</span>
+      </div>
+
+      <div class="streak-box" id="streak-box">
+        <span class="streak-icon">🔥</span>
+        <div class="streak-number-wrap">
+          <div class="streak-count" id="streak-count">0</div>
+          <div class="streak-label">day streak</div>
+        </div>
+        <span class="streak-done-badge" id="streak-done" style="display:none">✓ Done today</span>
+      </div>
+
+      <button class="btn-practice" id="btn-practice" onclick="markPractice()">Log today's practice</button>
+
+      <button class="btn-quiz" id="btn-quiz-start" onclick="startQuiz()">Quiz me</button>
+
+      <div id="quiz-panel">
+        <div class="quiz-progress" id="quiz-progress"></div>
+        <div class="quiz-word" id="quiz-word"></div>
+        <div class="quiz-translation" id="quiz-translation"></div>
+        <div class="quiz-actions">
+          <button id="btn-quiz-reveal" onclick="revealQuiz()">Reveal</button>
+          <button id="btn-quiz-correct" onclick="answerQuiz(true)">Got it ✓</button>
+          <button id="btn-quiz-wrong" onclick="answerQuiz(false)">Try again ✗</button>
+          <button id="btn-quiz-close" onclick="closeQuiz()">Close</button>
+        </div>
+      </div>
+
+      <div class="vocab-section">
+        <div class="vocab-section-title">Vocabulary</div>
+        <ul class="vocab-list" id="vocab-list"></ul>
+        <form class="vocab-form" onsubmit="handleAddVocab(event)">
+          <input id="input-fr" placeholder="French…" autocomplete="off">
+          <input id="input-en" placeholder="English…" autocomplete="off">
+          <button class="btn-add" type="submit">Add</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-// ─── Utils ───────────────────────────────────────────────────────────────────
+// ─── Utils ────────────────────────────────────────────────────────────────────
 function uid() { return Math.random().toString(36).slice(2, 10); }
 function today() { return new Date().toISOString().slice(0, 10); }
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+           .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
 
 // ─── Todo CRUD ────────────────────────────────────────────────────────────────
 function loadTodos(key) {
@@ -398,9 +760,7 @@ function loadTodos(key) {
   catch { return []; }
 }
 
-function saveTodos(key, arr) {
-  localStorage.setItem('todos_' + key, JSON.stringify(arr));
-}
+function saveTodos(key, arr) { localStorage.setItem('todos_' + key, JSON.stringify(arr)); }
 
 function addTodo(key, text) {
   const todos = loadTodos(key);
@@ -427,28 +787,108 @@ function clearCompleted(key) {
   renderTodos(key);
 }
 
-function renderTodos(key) {
-  const list = document.getElementById('list-' + key);
+// ─── Badge + Progress bar ─────────────────────────────────────────────────────
+function updateBadge(key) {
   const todos = loadTodos(key);
+  const total = todos.length;
+  const done = todos.filter(t => t.done).length;
+  const badge = document.getElementById('badge-' + key);
+  if (badge) {
+    badge.style.display = total === 0 ? 'none' : '';
+    if (total > 0) badge.textContent = done + ' / ' + total;
+  }
+  if (key === 'daily') {
+    const bar = document.getElementById('daily-progress-bar');
+    if (bar) bar.style.width = (total === 0 ? 0 : Math.round((done / total) * 100)) + '%';
+  }
+}
+
+// ─── Drag-and-drop state ──────────────────────────────────────────────────────
+let dragSrcKey = null;
+let dragSrcId  = null;
+
+function onDragStart(e) {
+  dragSrcKey = this.dataset.key;
+  dragSrcId  = this.dataset.id;
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function onDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  if (this.dataset.key === dragSrcKey && this.dataset.id !== dragSrcId) {
+    this.classList.add('drag-over');
+  }
+}
+
+function onDragLeave() { this.classList.remove('drag-over'); }
+
+function onDrop(e) {
+  e.stopPropagation();
+  this.classList.remove('drag-over');
+  const targetKey = this.dataset.key;
+  const targetId  = this.dataset.id;
+  if (dragSrcKey !== targetKey || dragSrcId === targetId) return;
+  const todos = loadTodos(targetKey);
+  const srcIdx = todos.findIndex(t => t.id === dragSrcId);
+  const tgtIdx = todos.findIndex(t => t.id === targetId);
+  if (srcIdx === -1 || tgtIdx === -1) return;
+  const [moved] = todos.splice(srcIdx, 1);
+  todos.splice(tgtIdx, 0, moved);
+  saveTodos(targetKey, todos);
+  renderTodos(targetKey);
+}
+
+function onDragEnd() {
+  document.querySelectorAll('.todo-item').forEach(el => el.classList.remove('dragging','drag-over'));
+}
+
+// ─── Render todos ─────────────────────────────────────────────────────────────
+function renderTodos(key) {
+  const list  = document.getElementById('list-' + key);
+  const todos = loadTodos(key);
+  updateBadge(key);
   if (!todos.length) {
     list.innerHTML = '<li class="empty-state">Nothing here yet</li>';
     return;
   }
   list.innerHTML = todos.map(t => `
-    <li class="todo-item">
-      <input type="checkbox" ${t.done ? 'checked' : ''}
-        onchange="toggleTodo('${key}','${t.id}')">
+    <li class="todo-item" draggable="true" data-id="${t.id}" data-key="${key}">
+      <span class="drag-handle" title="Reorder">&#10783;</span>
+      <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTodo('${key}','${t.id}')">
       <span class="todo-text ${t.done ? 'done' : ''}">${escHtml(t.text)}</span>
       <button class="btn-delete" onclick="deleteTodo('${key}','${t.id}')" title="Delete">×</button>
     </li>
   `).join('');
+  list.querySelectorAll('.todo-item').forEach(item => {
+    item.addEventListener('dragstart',  onDragStart);
+    item.addEventListener('dragover',   onDragOver);
+    item.addEventListener('dragleave',  onDragLeave);
+    item.addEventListener('drop',       onDrop);
+    item.addEventListener('dragend',    onDragEnd);
+  });
 }
 
 function handleAdd(e, key) {
   e.preventDefault();
   const input = document.getElementById('input-' + key);
-  const text = input.value.trim();
+  const text  = input.value.trim();
   if (text) { addTodo(key, text); input.value = ''; }
+}
+
+// ─── Daily auto-reset ─────────────────────────────────────────────────────────
+function checkDailyReset() {
+  const t = today();
+  const lastReset = localStorage.getItem('daily_last_reset');
+  if (lastReset !== t) {
+    const todos = loadTodos('daily');
+    let changed = false;
+    todos.forEach(task => { if (task.done) { task.done = false; changed = true; } });
+    if (changed) saveTodos('daily', todos);
+    localStorage.setItem('daily_last_reset', t);
+    if (changed) showToast('Daily tasks reset');
+  }
 }
 
 // ─── French streak ────────────────────────────────────────────────────────────
@@ -462,12 +902,10 @@ function saveStreak(s) { localStorage.setItem('french_streak', JSON.stringify(s)
 function markPractice() {
   const s = loadStreak();
   const t = today();
-  if (s.lastDate === t) return; // already done today
-
+  if (s.lastDate === t) return;
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
   const yStr = yesterday.toISOString().slice(0, 10);
-
   s.count = (s.lastDate === yStr) ? s.count + 1 : 1;
   s.lastDate = t;
   saveStreak(s);
@@ -477,18 +915,10 @@ function markPractice() {
 function renderStreak() {
   const s = loadStreak();
   const t = today();
-
-  // Auto-reset if more than one day gap
   if (s.lastDate && s.lastDate !== t) {
-    const last = new Date(s.lastDate);
-    const now = new Date(t);
-    const diff = Math.floor((now - last) / 86400000);
-    if (diff > 1) {
-      s.count = 0;
-      saveStreak(s);
-    }
+    const diff = Math.floor((new Date(t) - new Date(s.lastDate)) / 86400000);
+    if (diff > 1) { s.count = 0; saveStreak(s); }
   }
-
   document.getElementById('streak-count').textContent = s.count;
   const doneToday = s.lastDate === t;
   document.getElementById('streak-done').style.display = doneToday ? '' : 'none';
@@ -516,7 +946,7 @@ function deleteVocab(id) {
 }
 
 function renderVocab() {
-  const list = document.getElementById('vocab-list');
+  const list  = document.getElementById('vocab-list');
   const vocab = loadVocab();
   if (!vocab.length) {
     list.innerHTML = '<li class="empty-state">No words yet</li>';
@@ -524,7 +954,7 @@ function renderVocab() {
   }
   list.innerHTML = vocab.map(v => `
     <li class="vocab-item">
-      <span class="vocab-pair">
+      <span>
         <span class="vocab-fr">${escHtml(v.fr)}</span>
         <span class="vocab-arrow">→</span>
         <span class="vocab-en">${escHtml(v.en)}</span>
@@ -545,13 +975,75 @@ function handleAddVocab(e) {
   }
 }
 
-// ─── Security helper ──────────────────────────────────────────────────────────
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-           .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+// ─── Quiz mode ────────────────────────────────────────────────────────────────
+let quizQueue   = [];
+let quizCorrect = 0;
+let quizTotal   = 0;
+let quizCurrent = null;
+
+function startQuiz() {
+  const vocab = loadVocab();
+  if (!vocab.length) { showToast('Add some words first!'); return; }
+  quizQueue   = vocab.slice().sort(() => Math.random() - 0.5);
+  quizCorrect = 0;
+  quizTotal   = quizQueue.length;
+  document.getElementById('btn-quiz-start').style.display = 'none';
+  document.getElementById('quiz-panel').classList.add('active');
+  nextQuizWord();
 }
 
+function nextQuizWord() {
+  if (!quizQueue.length) { showQuizComplete(); return; }
+  quizCurrent = quizQueue.shift();
+  document.getElementById('quiz-word').textContent        = quizCurrent.fr;
+  document.getElementById('quiz-translation').textContent = '';
+  document.getElementById('quiz-progress').textContent    =
+    (quizTotal - quizQueue.length) + ' of ' + quizTotal + ' — ' + quizCorrect + ' correct';
+  document.getElementById('btn-quiz-reveal').style.display  = '';
+  document.getElementById('btn-quiz-correct').style.display = 'none';
+  document.getElementById('btn-quiz-wrong').style.display   = 'none';
+}
+
+function revealQuiz() {
+  if (!quizCurrent) return;
+  document.getElementById('quiz-translation').textContent   = quizCurrent.en;
+  document.getElementById('btn-quiz-reveal').style.display  = 'none';
+  document.getElementById('btn-quiz-correct').style.display = '';
+  document.getElementById('btn-quiz-wrong').style.display   = '';
+}
+
+function answerQuiz(correct) {
+  if (correct) { quizCorrect++; }
+  else { quizQueue.push(quizCurrent); }
+  nextQuizWord();
+}
+
+function showQuizComplete() {
+  document.getElementById('quiz-word').innerHTML          = '<span class="quiz-complete">Quiz complete! 🎉</span>';
+  document.getElementById('quiz-translation').textContent = quizCorrect + ' / ' + quizTotal + ' correct';
+  document.getElementById('quiz-progress').textContent    = '';
+  document.getElementById('btn-quiz-reveal').style.display  = 'none';
+  document.getElementById('btn-quiz-correct').style.display = 'none';
+  document.getElementById('btn-quiz-wrong').style.display   = 'none';
+}
+
+function closeQuiz() {
+  document.getElementById('quiz-panel').classList.remove('active');
+  document.getElementById('btn-quiz-start').style.display = '';
+  quizQueue = []; quizCurrent = null; quizCorrect = 0; quizTotal = 0;
+}
+
+// ─── Header date ──────────────────────────────────────────────────────────────
+(function() {
+  const el = document.getElementById('header-date');
+  if (!el) return;
+  el.textContent = new Date().toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+  });
+})();
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
+checkDailyReset();
 ['daily','longterm','other'].forEach(renderTodos);
 renderStreak();
 renderVocab();
