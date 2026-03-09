@@ -492,6 +492,8 @@ function loadTodos(key) {
 function saveTodos(key, arr) { localStorage.setItem('todos_' + key, JSON.stringify(arr)); }
 
 function addTodo(key, text) {
+  text = text.trim();
+  if (!text) return;
   const todos = loadTodos(key);
   todos.push({ id: uid(), text, done: false });
   saveTodos(key, todos);
