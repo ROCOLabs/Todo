@@ -382,6 +382,35 @@
   /* ── Quiz ────────────────────────────────────────────────────────────────── */
   .btn-quiz { width: 100%; padding: 8px; border: 1.5px solid #f43f5e; border-radius: 9px; font-size: .85rem; font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer; background: var(--color-card-bg); color: #f43f5e; transition: background .15s; }
   .btn-quiz:hover { background: var(--hover-french); }
+
+  /* ── Widget picker (settings) ────────────────────────────────────────────── */
+  .widget-picker { display: flex; gap: 6px; flex-wrap: wrap; }
+  .widget-btn { padding: 5px 14px; border-radius: 20px; border: 1.5px solid var(--color-border); background: none; font-size: .78rem; font-weight: 600; cursor: pointer; color: var(--color-text-muted); transition: all .15s; font-family: 'Inter', sans-serif; }
+  .widget-btn:hover { border-color: #6366f1; color: #6366f1; }
+  .widget-btn.selected { background: #6366f1; border-color: #6366f1; color: #fff; }
+
+  /* ── Habit tracker ────────────────────────────────────────────────────────── */
+  .habit-list { list-style: none; display: flex; flex-direction: column; gap: 6px; flex: 1; overflow-y: auto; }
+  .habit-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; background: var(--color-item-bg); transition: background .15s; }
+  .habit-item:hover { background: var(--hover-french); }
+  .habit-checkbox { width: 18px; height: 18px; accent-color: #f43f5e; cursor: pointer; flex-shrink: 0; }
+  .habit-name { flex: 1; font-size: .88rem; font-weight: 500; color: var(--color-text-body); }
+  .habit-streak { font-size: .75rem; font-weight: 700; color: #f43f5e; white-space: nowrap; }
+  .habit-empty { font-size: .82rem; color: var(--color-text-muted); font-style: italic; padding: 8px 0; text-align: center; list-style: none; }
+
+  /* ── Spending log ─────────────────────────────────────────────────────────── */
+  .spending-totals { display: flex; gap: 10px; margin-bottom: 10px; }
+  .spending-total-box { flex: 1; background: var(--color-item-bg); border-radius: 10px; padding: 10px 12px; text-align: center; }
+  .spending-total-label { font-size: .65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--color-text-muted); }
+  .spending-total-amount { font-size: 1.2rem; font-weight: 700; color: var(--color-text-primary); margin-top: 2px; }
+  .spending-list { list-style: none; display: flex; flex-direction: column; gap: 5px; overflow-y: auto; max-height: 160px; }
+  .spending-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 8px; background: var(--color-item-bg); font-size: .83rem; }
+  .spending-amount { font-weight: 700; color: #f43f5e; white-space: nowrap; }
+  .spending-desc { flex: 1; color: var(--color-text-body); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .spending-time { font-size: .72rem; color: var(--color-text-muted); white-space: nowrap; }
+  .spending-form { display: flex; gap: 6px; margin-top: 8px; }
+  .spending-form input[type="number"] { width: 80px; flex: none; }
+  .spending-empty { font-size: .82rem; color: var(--color-text-muted); font-style: italic; padding: 8px 0; text-align: center; list-style: none; }
   #quiz-panel { display: none; flex-direction: column; gap: 10px; background: var(--quiz-bg); border: 1.5px solid var(--quiz-border); border-radius: 12px; padding: 16px; }
   #quiz-panel.active { display: flex; }
   .quiz-word { font-size: 1.4rem; font-weight: 700; color: #f43f5e; text-align: center; letter-spacing: -.5px; }
@@ -738,46 +767,7 @@
     </div>
 
     <!-- FRANÇAIS -->
-    <div class="quadrant q-french">
-      <div class="quadrant-header">
-        <span class="quadrant-title">Français</span>
-      </div>
-
-      <div class="streak-box" id="streak-box">
-        <span class="streak-icon">🔥</span>
-        <div class="streak-number-wrap">
-          <div class="streak-count" id="streak-count">0</div>
-          <div class="streak-label">day streak</div>
-        </div>
-        <span class="streak-done-badge" id="streak-done" style="display:none">✓ Done today</span>
-      </div>
-
-      <button class="btn-practice" id="btn-practice" onclick="markPractice()">Log today's practice</button>
-
-      <button class="btn-quiz" id="btn-quiz-start" onclick="startQuiz()">Quiz me</button>
-
-      <div id="quiz-panel">
-        <div class="quiz-progress" id="quiz-progress"></div>
-        <div class="quiz-word" id="quiz-word"></div>
-        <div class="quiz-translation" id="quiz-translation"></div>
-        <div class="quiz-actions">
-          <button id="btn-quiz-reveal"  onclick="revealQuiz()">Reveal</button>
-          <button id="btn-quiz-correct" onclick="answerQuiz(true)">Got it ✓</button>
-          <button id="btn-quiz-wrong"   onclick="answerQuiz(false)">Try again ✗</button>
-          <button id="btn-quiz-close"   onclick="closeQuiz()">Close</button>
-        </div>
-      </div>
-
-      <div class="vocab-section">
-        <div class="vocab-section-title">Vocabulary</div>
-        <ul class="vocab-list" id="vocab-list"></ul>
-        <form class="vocab-form" onsubmit="handleAddVocab(event)">
-          <input id="input-fr" placeholder="French…" autocomplete="off">
-          <input id="input-en" placeholder="English…" autocomplete="off">
-          <button class="btn-add" type="submit">Add</button>
-        </form>
-      </div>
-    </div>
+    <div class="quadrant q-french" id="quadrant-4"></div>
 
   </div>
 </div>
@@ -845,6 +835,27 @@
           <button type="button" class="btn-add" style="background:#6366f1;box-shadow:0 2px 6px rgba(99,102,241,.3);align-self:flex-start" onclick="addSettingsTask()">Add task</button>
         </div>
         <ul class="recurring-list" id="settings-recurring-list"></ul>
+      </div>
+      <div class="settings-section">
+        <label class="settings-label">4th Quadrant</label>
+        <div class="widget-picker">
+          <button type="button" class="widget-btn" data-widget="language" onclick="selectWidget('language')">Language</button>
+          <button type="button" class="widget-btn" data-widget="habit" onclick="selectWidget('habit')">Habits</button>
+          <button type="button" class="widget-btn" data-widget="spending" onclick="selectWidget('spending')">Spending</button>
+        </div>
+      </div>
+      <div class="settings-section" id="settings-language-section">
+        <label class="settings-label">Language name</label>
+        <input class="todo-input" id="settings-language" placeholder="e.g. French, Spanish…" autocomplete="off">
+      </div>
+      <div class="settings-section" id="settings-habits-section" style="display:none">
+        <label class="settings-label">Habits</label>
+        <p class="settings-hint">Habits you want to track daily. Check them off each day to build streaks.</p>
+        <div style="display:flex;gap:6px;margin-top:4px">
+          <input class="todo-input" id="settings-habit-input" placeholder="Habit name…" autocomplete="off">
+          <button type="button" class="btn-add" style="background:#6366f1;box-shadow:0 2px 6px rgba(99,102,241,.3);white-space:nowrap" onclick="addSettingsHabit()">Add</button>
+        </div>
+        <ul class="recurring-list" id="settings-habits-list"></ul>
       </div>
     </div>
     <div class="settings-modal-footer">
@@ -1061,6 +1072,7 @@ function applySettings(s) {
   document.getElementById('header-initials').textContent = getInitials(s.name || '');
   const first = (s.name || 'My').trim().split(' ')[0];
   document.getElementById('header-name').textContent = first + '\u2019s Space';
+  renderQuadrant4(s);
 }
 
 // ─── Onboarding ───────────────────────────────────────────────────────────────
@@ -1113,7 +1125,7 @@ function removeOnboardingTask(idx) {
 function completeOnboarding() {
   const name = document.getElementById('onboarding-name').value.trim();
   if (!name) { showToast('Please enter your name'); document.getElementById('onboarding-name').focus(); return; }
-  const s = { name: name, recurringTasks: onboardingTasks };
+  const s = { name: name, recurringTasks: onboardingTasks, quadrant4: { widget: 'language', language: 'French', habits: [] } };
   saveSettings(s);
   applySettings(s);
   document.getElementById('onboarding-overlay').style.display = 'none';
@@ -1130,6 +1142,12 @@ function openSettings() {
   document.getElementById('settings-name').value = s.name || '';
   settingsTasks = (s.recurringTasks || []).map(function(t) { return { text: t.text, days: t.days.slice() }; });
   renderRecurringList('settings-recurring-list', settingsTasks, 'removeSettingsTask');
+  const q4 = s.quadrant4 || { widget: 'language', language: 'French', habits: [] };
+  settingsWidget = q4.widget || 'language';
+  document.getElementById('settings-language').value = q4.language || 'French';
+  settingsHabits = (q4.habits || []).map(function(h) { return { id: h.id, name: h.name }; });
+  renderSettingsHabits();
+  selectWidget(settingsWidget);
   document.getElementById('settings-overlay').style.display = 'flex';
 }
 
@@ -1160,7 +1178,8 @@ function handleSettingsOverlayClick(e) {
 function saveSettingsAndClose() {
   const name = document.getElementById('settings-name').value.trim();
   if (!name) { showToast('Please enter your name'); document.getElementById('settings-name').focus(); return; }
-  const s = { name: name, recurringTasks: settingsTasks };
+  const lang = document.getElementById('settings-language').value.trim() || 'French';
+  const s = { name: name, recurringTasks: settingsTasks, quadrant4: { widget: settingsWidget, language: lang, habits: settingsHabits } };
   saveSettings(s);
   applySettings(s);
   closeSettings();
@@ -1345,6 +1364,209 @@ function renderHealthLog() {
 
 // Re-check meal prompt every 5 minutes in case a window opens
 setInterval(renderMealPrompt, 300000);
+
+// ─── Quadrant 4 widget rendering ──────────────────────────────────────────────
+function langWidgetHTML(lang) {
+  const esc = escHtml(lang);
+  return '<div class="quadrant-header"><span class="quadrant-title">' + esc + '</span></div>' +
+    '<div class="streak-box" id="streak-box">' +
+      '<span class="streak-icon">🔥</span>' +
+      '<div class="streak-number-wrap">' +
+        '<div class="streak-count" id="streak-count">0</div>' +
+        '<div class="streak-label">day streak</div>' +
+      '</div>' +
+      '<span class="streak-done-badge" id="streak-done" style="display:none">✓ Done today</span>' +
+    '</div>' +
+    '<button class="btn-practice" id="btn-practice" onclick="markPractice()">Log today\'s practice</button>' +
+    '<button class="btn-quiz" id="btn-quiz-start" onclick="startQuiz()">Quiz me</button>' +
+    '<div id="quiz-panel">' +
+      '<div class="quiz-progress" id="quiz-progress"></div>' +
+      '<div class="quiz-word" id="quiz-word"></div>' +
+      '<div class="quiz-translation" id="quiz-translation"></div>' +
+      '<div class="quiz-actions">' +
+        '<button id="btn-quiz-reveal" onclick="revealQuiz()">Reveal</button>' +
+        '<button id="btn-quiz-correct" onclick="answerQuiz(true)">Got it ✓</button>' +
+        '<button id="btn-quiz-wrong" onclick="answerQuiz(false)">Try again ✗</button>' +
+        '<button id="btn-quiz-close" onclick="closeQuiz()">Close</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="vocab-section">' +
+      '<div class="vocab-section-title">Vocabulary</div>' +
+      '<ul class="vocab-list" id="vocab-list"></ul>' +
+      '<form class="vocab-form" onsubmit="handleAddVocab(event)">' +
+        '<input id="input-fr" placeholder="' + esc + '…" autocomplete="off">' +
+        '<input id="input-en" placeholder="English…" autocomplete="off">' +
+        '<button class="btn-add" type="submit">Add</button>' +
+      '</form>' +
+    '</div>';
+}
+
+function habitWidgetHTML() {
+  return '<div class="quadrant-header"><span class="quadrant-title">Habits</span></div>' +
+    '<ul class="habit-list" id="habit-list"></ul>';
+}
+
+function spendingWidgetHTML() {
+  return '<div class="quadrant-header"><span class="quadrant-title">Spending</span></div>' +
+    '<div class="spending-totals" id="spending-totals"></div>' +
+    '<ul class="spending-list" id="spending-list"></ul>' +
+    '<form class="spending-form" onsubmit="handleAddSpend(event)">' +
+      '<input id="spend-amount" type="number" min="0" step="0.01" placeholder="$0.00">' +
+      '<input id="spend-desc" placeholder="Description…" autocomplete="off">' +
+      '<button class="btn-add" type="submit">Add</button>' +
+    '</form>';
+}
+
+function renderQuadrant4(s) {
+  var q4 = (s && s.quadrant4) || {};
+  var widget = q4.widget || 'language';
+  var el = document.getElementById('quadrant-4');
+  if (!el) return;
+  if (widget === 'language') {
+    el.innerHTML = langWidgetHTML(q4.language || 'French');
+    renderStreak(); renderVocab();
+  } else if (widget === 'habit') {
+    el.innerHTML = habitWidgetHTML();
+    renderHabits(s);
+  } else if (widget === 'spending') {
+    el.innerHTML = spendingWidgetHTML();
+    renderSpending();
+  }
+}
+
+// ─── Habit tracker ────────────────────────────────────────────────────────────
+function loadHabitsLog() {
+  try { return JSON.parse(localStorage.getItem('habits_log')) || {}; }
+  catch { return {}; }
+}
+function saveHabitsLog(log) { localStorage.setItem('habits_log', JSON.stringify(log)); }
+
+function toggleHabit(habitId) {
+  var log = loadHabitsLog(), t = today();
+  if (!log[t]) log[t] = {};
+  log[t][habitId] = !log[t][habitId];
+  saveHabitsLog(log);
+  renderHabits(loadSettings());
+}
+
+function getHabitStreak(habitId) {
+  var log = loadHabitsLog(), t = today(), streak = 0;
+  var d = new Date();
+  d.setDate(d.getDate() - 1);
+  while (true) {
+    var ds = d.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+    if (log[ds] && log[ds][habitId]) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  if (log[t] && log[t][habitId]) streak++;
+  return streak;
+}
+
+function renderHabits(s) {
+  var list = document.getElementById('habit-list');
+  if (!list) return;
+  var habits = (s && s.quadrant4 && s.quadrant4.habits) || [];
+  if (!habits.length) {
+    list.innerHTML = '<li class="habit-empty">No habits yet — add some in Settings ⚙️</li>';
+    return;
+  }
+  var log = loadHabitsLog(), t = today(), todayLog = log[t] || {};
+  list.innerHTML = habits.map(function(h) {
+    var done = !!todayLog[h.id];
+    var streak = getHabitStreak(h.id);
+    return '<li class="habit-item">' +
+      '<input type="checkbox" class="habit-checkbox"' + (done ? ' checked' : '') + ' onchange="toggleHabit(\'' + h.id + '\')">' +
+      '<span class="habit-name"' + (done ? ' style="text-decoration:line-through;opacity:.5"' : '') + '>' + escHtml(h.name) + '</span>' +
+      (streak > 0 ? '<span class="habit-streak">🔥 ' + streak + '</span>' : '') +
+    '</li>';
+  }).join('');
+}
+
+// ─── Spending log ─────────────────────────────────────────────────────────────
+function loadSpending() {
+  try { return JSON.parse(localStorage.getItem('spending_log')) || []; }
+  catch { return []; }
+}
+function saveSpending(log) { localStorage.setItem('spending_log', JSON.stringify(log)); }
+
+function handleAddSpend(e) {
+  e.preventDefault();
+  var amount = parseFloat(document.getElementById('spend-amount').value);
+  var desc = document.getElementById('spend-desc').value.trim();
+  if (!amount || amount <= 0) { showToast('Enter a valid amount'); return; }
+  var log = loadSpending();
+  log.push({ id: uid(), date: today(), timestamp: Date.now(), amount: amount, description: desc });
+  saveSpending(log);
+  document.getElementById('spend-amount').value = '';
+  document.getElementById('spend-desc').value = '';
+  renderSpending();
+}
+
+function deleteSpend(id) {
+  saveSpending(loadSpending().filter(function(e) { return e.id !== id; }));
+  renderSpending();
+}
+
+function renderSpending() {
+  var totalsEl = document.getElementById('spending-totals');
+  var listEl = document.getElementById('spending-list');
+  if (!totalsEl || !listEl) return;
+  var log = loadSpending(), t = today();
+  var todayEntries = log.filter(function(e) { return e.date === t; }).reverse();
+  var todayTotal = todayEntries.reduce(function(sum, e) { return sum + e.amount; }, 0);
+  var weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
+  var weekStr = weekAgo.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  var weekTotal = log.filter(function(e) { return e.date >= weekStr; }).reduce(function(sum, e) { return sum + e.amount; }, 0);
+  totalsEl.innerHTML =
+    '<div class="spending-total-box"><div class="spending-total-label">Today</div><div class="spending-total-amount">$' + todayTotal.toFixed(2) + '</div></div>' +
+    '<div class="spending-total-box"><div class="spending-total-label">This week</div><div class="spending-total-amount">$' + weekTotal.toFixed(2) + '</div></div>';
+  if (!todayEntries.length) { listEl.innerHTML = '<li class="spending-empty">Nothing logged today</li>'; return; }
+  listEl.innerHTML = todayEntries.map(function(e) {
+    var time = new Date(e.timestamp).toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', hour12: true });
+    return '<li class="spending-item">' +
+      '<span class="spending-amount">$' + e.amount.toFixed(2) + '</span>' +
+      '<span class="spending-desc">' + (e.description ? escHtml(e.description) : '<span style="opacity:.4">—</span>') + '</span>' +
+      '<span class="spending-time">' + time + '</span>' +
+      '<button class="btn-delete" onclick="deleteSpend(\'' + e.id + '\')" title="Delete">×</button>' +
+    '</li>';
+  }).join('');
+}
+
+// ─── Settings widget section ──────────────────────────────────────────────────
+var settingsWidget = 'language';
+var settingsHabits = [];
+
+function selectWidget(w) {
+  settingsWidget = w;
+  document.querySelectorAll('.widget-btn').forEach(function(b) { b.classList.toggle('selected', b.dataset.widget === w); });
+  document.getElementById('settings-language-section').style.display = w === 'language' ? '' : 'none';
+  document.getElementById('settings-habits-section').style.display = w === 'habit' ? '' : 'none';
+}
+
+function addSettingsHabit() {
+  var text = document.getElementById('settings-habit-input').value.trim();
+  if (!text) { showToast('Enter a habit name'); return; }
+  settingsHabits.push({ id: uid(), name: text });
+  document.getElementById('settings-habit-input').value = '';
+  renderSettingsHabits();
+}
+
+function removeSettingsHabit(idx) {
+  settingsHabits.splice(idx, 1);
+  renderSettingsHabits();
+}
+
+function renderSettingsHabits() {
+  var list = document.getElementById('settings-habits-list');
+  if (!list) return;
+  if (!settingsHabits.length) { list.innerHTML = '<li class="recurring-empty">No habits added yet</li>'; return; }
+  list.innerHTML = settingsHabits.map(function(h, i) {
+    return '<li class="recurring-item">' +
+      '<span class="recurring-item-text">' + escHtml(h.name) + '</span>' +
+      '<button class="btn-delete" onclick="removeSettingsHabit(' + i + ')" title="Remove">×</button>' +
+    '</li>';
+  }).join('');
+}
 
 // ─── French streak ────────────────────────────────────────────────────────────
 function loadStreak() {
@@ -1579,8 +1801,6 @@ function saveWorkout() {
   checkDailyReset();
   scheduleMidnightWatcher();
   ['daily','longterm'].forEach(renderTodos);
-  renderStreak();
-  renderVocab();
   renderHealthLog();
   renderMealPrompt();
 })();
