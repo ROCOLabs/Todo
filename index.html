@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roark's Dashboard</title>
+<title>My Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -598,6 +598,32 @@
     .workout-num { flex: 1 1 25%; }
   }
 
+  /* ── Header actions group ────────────────────────────────────────────────── */
+  .site-header-actions { display: flex; align-items: center; gap: 4px; }
+
+  /* ── Settings button ─────────────────────────────────────────────────────── */
+  #settings-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; padding: 4px 8px; border-radius: 6px; color: #94a3b8; transition: color .15s; }
+  #settings-btn:hover { color: #f8fafc; }
+
+  /* ── Onboarding / Settings modals ────────────────────────────────────────── */
+  .settings-modal { background: var(--color-card-bg); border-radius: 14px; width: 100%; max-width: 500px; display: flex; flex-direction: column; max-height: 90vh; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.35); }
+  .settings-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px 14px; border-bottom: 1px solid var(--color-border-light); font-size: 1rem; font-weight: 700; color: var(--color-text-primary); flex-shrink: 0; }
+  .settings-modal-body { padding: 20px 22px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; flex: 1; }
+  .settings-modal-footer { padding: 14px 22px 18px; border-top: 1px solid var(--color-border-light); display: flex; gap: 10px; flex-shrink: 0; }
+  .settings-section { display: flex; flex-direction: column; gap: 8px; }
+  .settings-label { font-size: .72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--color-text-muted); }
+  .settings-hint { font-size: .78rem; color: var(--color-text-muted); line-height: 1.5; margin-top: -2px; }
+  .recurring-form { display: flex; flex-direction: column; gap: 8px; }
+  .day-picker { display: flex; gap: 4px; flex-wrap: wrap; }
+  .day-btn { padding: 4px 10px; border-radius: 20px; border: 1.5px solid var(--color-border); background: none; font-size: .75rem; font-weight: 600; cursor: pointer; color: var(--color-text-muted); transition: all .15s; font-family: 'Inter', sans-serif; }
+  .day-btn:hover { border-color: #6366f1; color: #6366f1; }
+  .day-btn.selected { background: #6366f1; border-color: #6366f1; color: #fff; }
+  .recurring-list { list-style: none; display: flex; flex-direction: column; gap: 4px; margin-top: 4px; min-height: 20px; }
+  .recurring-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; background: var(--color-item-bg); }
+  .recurring-item-text { font-size: .85rem; font-weight: 500; color: var(--color-text-body); flex: 1; }
+  .recurring-item-days { font-size: .72rem; color: var(--color-text-muted); white-space: nowrap; }
+  .recurring-empty { font-size: .8rem; color: var(--color-text-muted); font-style: italic; padding: 4px 0; list-style: none; }
+
   /* ── Workout history ─────────────────────────────────────────────────────── */
   .workout-session { display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid var(--color-border-light); padding-bottom: 14px; margin-bottom: 14px; }
   .workout-session:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
@@ -615,11 +641,14 @@
 
 <header class="site-header">
   <div class="site-header-brand">
-    <div class="site-header-logo">RC</div>
-    <span class="site-header-title">My Space</span>
+    <div class="site-header-logo" id="header-initials">?</div>
+    <span class="site-header-title" id="header-name">My Space</span>
   </div>
-  <button id="dark-toggle" aria-label="Toggle dark mode">🌙</button>
-  <span class="site-header-date" id="header-date"></span>
+  <div class="site-header-actions">
+    <span class="site-header-date" id="header-date"></span>
+    <button id="settings-btn" aria-label="Settings" onclick="openSettings()">⚙️</button>
+    <button id="dark-toggle" aria-label="Toggle dark mode">🌙</button>
+  </div>
 </header>
 
 <div id="toast"></div>
@@ -750,6 +779,78 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="modal-overlay" id="onboarding-overlay" style="display:none">
+  <div class="settings-modal">
+    <div class="settings-modal-header"><span>👋 Welcome!</span></div>
+    <div class="settings-modal-body">
+      <div class="settings-section">
+        <label class="settings-label">What's your name?</label>
+        <input class="todo-input" id="onboarding-name" placeholder="Your first name…" autocomplete="off">
+      </div>
+      <div class="settings-section">
+        <label class="settings-label">Recurring daily tasks</label>
+        <p class="settings-hint">Add tasks that automatically appear on specific days each week — like "Stretch" every day or "Lift" on Mon/Tue/Thu/Fri. You can skip this and add them later in settings.</p>
+        <div class="recurring-form">
+          <input class="todo-input" id="onboarding-task-input" placeholder="Task name…" autocomplete="off">
+          <div class="day-picker" id="onboarding-day-picker">
+            <button type="button" class="day-btn" data-day="0" onclick="this.classList.toggle('selected')">Sun</button>
+            <button type="button" class="day-btn" data-day="1" onclick="this.classList.toggle('selected')">Mon</button>
+            <button type="button" class="day-btn" data-day="2" onclick="this.classList.toggle('selected')">Tue</button>
+            <button type="button" class="day-btn" data-day="3" onclick="this.classList.toggle('selected')">Wed</button>
+            <button type="button" class="day-btn" data-day="4" onclick="this.classList.toggle('selected')">Thu</button>
+            <button type="button" class="day-btn" data-day="5" onclick="this.classList.toggle('selected')">Fri</button>
+            <button type="button" class="day-btn" data-day="6" onclick="this.classList.toggle('selected')">Sat</button>
+          </div>
+          <button type="button" class="btn-add" style="background:#6366f1;box-shadow:0 2px 6px rgba(99,102,241,.3);align-self:flex-start" onclick="addOnboardingTask()">Add task</button>
+        </div>
+        <ul class="recurring-list" id="onboarding-recurring-list"></ul>
+      </div>
+    </div>
+    <div class="settings-modal-footer">
+      <button class="btn-workout-save" onclick="completeOnboarding()">Get started!</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="modal-overlay" id="settings-overlay" style="display:none" onclick="handleSettingsOverlayClick(event)">
+  <div class="settings-modal">
+    <div class="settings-modal-header">
+      <span>⚙️ Settings</span>
+      <button class="workout-close" onclick="closeSettings()">×</button>
+    </div>
+    <div class="settings-modal-body">
+      <div class="settings-section">
+        <label class="settings-label">Your name</label>
+        <input class="todo-input" id="settings-name" placeholder="Your first name…" autocomplete="off">
+      </div>
+      <div class="settings-section">
+        <label class="settings-label">Recurring daily tasks</label>
+        <p class="settings-hint">Tasks that automatically appear on specific days each week. Changes take effect tomorrow (or after a daily reset).</p>
+        <div class="recurring-form">
+          <input class="todo-input" id="settings-task-input" placeholder="Task name…" autocomplete="off">
+          <div class="day-picker" id="settings-day-picker">
+            <button type="button" class="day-btn" data-day="0" onclick="this.classList.toggle('selected')">Sun</button>
+            <button type="button" class="day-btn" data-day="1" onclick="this.classList.toggle('selected')">Mon</button>
+            <button type="button" class="day-btn" data-day="2" onclick="this.classList.toggle('selected')">Tue</button>
+            <button type="button" class="day-btn" data-day="3" onclick="this.classList.toggle('selected')">Wed</button>
+            <button type="button" class="day-btn" data-day="4" onclick="this.classList.toggle('selected')">Thu</button>
+            <button type="button" class="day-btn" data-day="5" onclick="this.classList.toggle('selected')">Fri</button>
+            <button type="button" class="day-btn" data-day="6" onclick="this.classList.toggle('selected')">Sat</button>
+          </div>
+          <button type="button" class="btn-add" style="background:#6366f1;box-shadow:0 2px 6px rgba(99,102,241,.3);align-self:flex-start" onclick="addSettingsTask()">Add task</button>
+        </div>
+        <ul class="recurring-list" id="settings-recurring-list"></ul>
+      </div>
+    </div>
+    <div class="settings-modal-footer">
+      <button class="btn-workout-save" onclick="saveSettingsAndClose()">Save</button>
+      <button class="btn-workout-skip" onclick="closeSettings()">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -944,17 +1045,139 @@ function handleAdd(e, key) {
   if (text) { addTodo(key, text); input.value = ''; }
 }
 
-// ─── Daily reset + seeding ────────────────────────────────────────────────────
-const LIFT_DAYS = [1, 2, 4, 5]; // Mon, Tue, Thu, Fri
+// ─── User settings ────────────────────────────────────────────────────────────
+function loadSettings() {
+  try { return JSON.parse(localStorage.getItem('user_settings')) || null; }
+  catch { return null; }
+}
 
+function saveSettings(s) { localStorage.setItem('user_settings', JSON.stringify(s)); }
+
+function getInitials(name) {
+  return name.trim().split(/\s+/).map(w => w[0] && w[0].toUpperCase()).filter(Boolean).slice(0, 2).join('') || '?';
+}
+
+function applySettings(s) {
+  document.getElementById('header-initials').textContent = getInitials(s.name || '');
+  const first = (s.name || 'My').trim().split(' ')[0];
+  document.getElementById('header-name').textContent = first + '\u2019s Space';
+}
+
+// ─── Onboarding ───────────────────────────────────────────────────────────────
+let onboardingTasks = [];
+const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+function getSelectedDays(pickerId) {
+  return [...document.querySelectorAll('#' + pickerId + ' .day-btn.selected')].map(b => parseInt(b.dataset.day, 10));
+}
+
+function clearDayPicker(pickerId) {
+  document.querySelectorAll('#' + pickerId + ' .day-btn').forEach(b => b.classList.remove('selected'));
+}
+
+function renderRecurringList(listId, tasks, removeFn) {
+  const list = document.getElementById(listId);
+  if (!tasks.length) { list.innerHTML = '<li class="recurring-empty">No recurring tasks added yet</li>'; return; }
+  list.innerHTML = tasks.map(function(t, i) {
+    return '<li class="recurring-item">' +
+      '<span class="recurring-item-text">' + escHtml(t.text) + '</span>' +
+      '<span class="recurring-item-days">' + t.days.map(function(d) { return DAY_LABELS[d]; }).join(', ') + '</span>' +
+      '<button class="btn-delete" onclick="' + removeFn + '(' + i + ')" title="Remove">\u00d7</button>' +
+    '</li>';
+  }).join('');
+}
+
+function showOnboarding() {
+  onboardingTasks = [];
+  renderRecurringList('onboarding-recurring-list', onboardingTasks, 'removeOnboardingTask');
+  document.getElementById('onboarding-overlay').style.display = 'flex';
+  setTimeout(function() { document.getElementById('onboarding-name').focus(); }, 100);
+}
+
+function addOnboardingTask() {
+  const text = document.getElementById('onboarding-task-input').value.trim();
+  const days = getSelectedDays('onboarding-day-picker');
+  if (!text) { showToast('Enter a task name'); return; }
+  if (!days.length) { showToast('Select at least one day'); return; }
+  onboardingTasks.push({ text: text, days: days });
+  document.getElementById('onboarding-task-input').value = '';
+  clearDayPicker('onboarding-day-picker');
+  renderRecurringList('onboarding-recurring-list', onboardingTasks, 'removeOnboardingTask');
+}
+
+function removeOnboardingTask(idx) {
+  onboardingTasks.splice(idx, 1);
+  renderRecurringList('onboarding-recurring-list', onboardingTasks, 'removeOnboardingTask');
+}
+
+function completeOnboarding() {
+  const name = document.getElementById('onboarding-name').value.trim();
+  if (!name) { showToast('Please enter your name'); document.getElementById('onboarding-name').focus(); return; }
+  const s = { name: name, recurringTasks: onboardingTasks };
+  saveSettings(s);
+  applySettings(s);
+  document.getElementById('onboarding-overlay').style.display = 'none';
+  seedDailyTasks();
+  renderTodos('daily');
+  showToast('Welcome, ' + name + '!');
+}
+
+// ─── Settings modal ───────────────────────────────────────────────────────────
+let settingsTasks = [];
+
+function openSettings() {
+  const s = loadSettings() || { name: '', recurringTasks: [] };
+  document.getElementById('settings-name').value = s.name || '';
+  settingsTasks = (s.recurringTasks || []).map(function(t) { return { text: t.text, days: t.days.slice() }; });
+  renderRecurringList('settings-recurring-list', settingsTasks, 'removeSettingsTask');
+  document.getElementById('settings-overlay').style.display = 'flex';
+}
+
+function addSettingsTask() {
+  const text = document.getElementById('settings-task-input').value.trim();
+  const days = getSelectedDays('settings-day-picker');
+  if (!text) { showToast('Enter a task name'); return; }
+  if (!days.length) { showToast('Select at least one day'); return; }
+  settingsTasks.push({ text: text, days: days });
+  document.getElementById('settings-task-input').value = '';
+  clearDayPicker('settings-day-picker');
+  renderRecurringList('settings-recurring-list', settingsTasks, 'removeSettingsTask');
+}
+
+function removeSettingsTask(idx) {
+  settingsTasks.splice(idx, 1);
+  renderRecurringList('settings-recurring-list', settingsTasks, 'removeSettingsTask');
+}
+
+function closeSettings() {
+  document.getElementById('settings-overlay').style.display = 'none';
+}
+
+function handleSettingsOverlayClick(e) {
+  if (e.target === document.getElementById('settings-overlay')) closeSettings();
+}
+
+function saveSettingsAndClose() {
+  const name = document.getElementById('settings-name').value.trim();
+  if (!name) { showToast('Please enter your name'); document.getElementById('settings-name').focus(); return; }
+  const s = { name: name, recurringTasks: settingsTasks };
+  saveSettings(s);
+  applySettings(s);
+  closeSettings();
+  showToast('Settings saved!');
+}
+
+// ─── Daily reset + seeding ────────────────────────────────────────────────────
 function seedDailyTasks() {
+  const settings = loadSettings();
+  if (!settings || !settings.recurringTasks || !settings.recurringTasks.length) return;
   const day = getETDayOfWeek();
-  const defaults = LIFT_DAYS.includes(day) ? ['Lift', 'Cardio', 'Stretch'] : ['Stretch'];
+  const defaults = settings.recurringTasks.filter(function(t) { return t.days.includes(day); }).map(function(t) { return t.text; });
   const existing = loadTodos('daily');
-  const existingTexts = existing.map(t => t.text);
-  const toAdd = defaults.filter(t => !existingTexts.includes(t));
+  const existingTexts = existing.map(function(t) { return t.text; });
+  const toAdd = defaults.filter(function(t) { return !existingTexts.includes(t); });
   if (toAdd.length) {
-    saveTodos('daily', [...toAdd.map(text => ({ id: uid(), text, done: false })), ...existing]);
+    saveTodos('daily', [...toAdd.map(function(text) { return { id: uid(), text: text, done: false }; }), ...existing]);
   }
 }
 
@@ -1350,13 +1573,17 @@ function saveWorkout() {
 }
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
-checkDailyReset();
-scheduleMidnightWatcher();
-['daily','longterm'].forEach(renderTodos);
-renderStreak();
-renderVocab();
-renderHealthLog();
-renderMealPrompt();
+(function() {
+  const s = loadSettings();
+  if (s) { applySettings(s); } else { showOnboarding(); }
+  checkDailyReset();
+  scheduleMidnightWatcher();
+  ['daily','longterm'].forEach(renderTodos);
+  renderStreak();
+  renderVocab();
+  renderHealthLog();
+  renderMealPrompt();
+})();
 </script>
 </body>
 </html>
