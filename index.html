@@ -799,6 +799,27 @@
         </div>
         <ul class="recurring-list" id="onboarding-recurring-list"></ul>
       </div>
+      <div class="settings-section">
+        <label class="settings-label">4th Quadrant</label>
+        <p class="settings-hint">Pick what you want in the 4th panel. You can change this anytime in settings.</p>
+        <div class="widget-picker">
+          <button type="button" class="widget-btn" data-widget="language" onclick="selectOnboardingWidget('language')">Language</button>
+          <button type="button" class="widget-btn" data-widget="habit" onclick="selectOnboardingWidget('habit')">Habits</button>
+          <button type="button" class="widget-btn" data-widget="spending" onclick="selectOnboardingWidget('spending')">Spending</button>
+        </div>
+      </div>
+      <div class="settings-section" id="onboarding-language-section">
+        <label class="settings-label">Language name</label>
+        <input class="todo-input" id="onboarding-language" placeholder="e.g. French, Spanish…" autocomplete="off" value="French">
+      </div>
+      <div class="settings-section" id="onboarding-habits-section" style="display:none">
+        <label class="settings-label">Habits to track</label>
+        <div style="display:flex;gap:6px;margin-top:4px">
+          <input class="todo-input" id="onboarding-habit-input" placeholder="Habit name…" autocomplete="off">
+          <button type="button" class="btn-add" style="background:#6366f1;box-shadow:0 2px 6px rgba(99,102,241,.3);white-space:nowrap" onclick="addOnboardingHabit()">Add</button>
+        </div>
+        <ul class="recurring-list" id="onboarding-habits-list"></ul>
+      </div>
     </div>
     <div class="settings-modal-footer">
       <button class="btn-workout-save" onclick="completeOnboarding()">Get started!</button>
@@ -1077,7 +1098,41 @@ function applySettings(s) {
 
 // ─── Onboarding ───────────────────────────────────────────────────────────────
 let onboardingTasks = [];
+let onboardingWidget = 'language';
+let onboardingHabits = [];
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+function selectOnboardingWidget(w) {
+  onboardingWidget = w;
+  document.querySelectorAll('#onboarding-overlay .widget-btn').forEach(function(b) { b.classList.toggle('selected', b.dataset.widget === w); });
+  document.getElementById('onboarding-language-section').style.display = w === 'language' ? '' : 'none';
+  document.getElementById('onboarding-habits-section').style.display = w === 'habit' ? '' : 'none';
+}
+
+function addOnboardingHabit() {
+  var text = document.getElementById('onboarding-habit-input').value.trim();
+  if (!text) { showToast('Enter a habit name'); return; }
+  onboardingHabits.push({ id: uid(), name: text });
+  document.getElementById('onboarding-habit-input').value = '';
+  renderOnboardingHabits();
+}
+
+function removeOnboardingHabit(idx) {
+  onboardingHabits.splice(idx, 1);
+  renderOnboardingHabits();
+}
+
+function renderOnboardingHabits() {
+  var list = document.getElementById('onboarding-habits-list');
+  if (!list) return;
+  if (!onboardingHabits.length) { list.innerHTML = '<li class="recurring-empty">No habits added yet</li>'; return; }
+  list.innerHTML = onboardingHabits.map(function(h, i) {
+    return '<li class="recurring-item">' +
+      '<span class="recurring-item-text">' + escHtml(h.name) + '</span>' +
+      '<button class="btn-delete" onclick="removeOnboardingHabit(' + i + ')" title="Remove">×</button>' +
+    '</li>';
+  }).join('');
+}
 
 function getSelectedDays(pickerId) {
   return [...document.querySelectorAll('#' + pickerId + ' .day-btn.selected')].map(b => parseInt(b.dataset.day, 10));
@@ -1101,7 +1156,10 @@ function renderRecurringList(listId, tasks, removeFn) {
 
 function showOnboarding() {
   onboardingTasks = [];
+  onboardingHabits = [];
   renderRecurringList('onboarding-recurring-list', onboardingTasks, 'removeOnboardingTask');
+  renderOnboardingHabits();
+  selectOnboardingWidget('language');
   document.getElementById('onboarding-overlay').style.display = 'flex';
   setTimeout(function() { document.getElementById('onboarding-name').focus(); }, 100);
 }
@@ -1125,7 +1183,8 @@ function removeOnboardingTask(idx) {
 function completeOnboarding() {
   const name = document.getElementById('onboarding-name').value.trim();
   if (!name) { showToast('Please enter your name'); document.getElementById('onboarding-name').focus(); return; }
-  const s = { name: name, recurringTasks: onboardingTasks, quadrant4: { widget: 'language', language: 'French', habits: [] } };
+  const lang = document.getElementById('onboarding-language').value.trim() || 'French';
+  const s = { name: name, recurringTasks: onboardingTasks, quadrant4: { widget: onboardingWidget, language: lang, habits: onboardingHabits } };
   saveSettings(s);
   applySettings(s);
   document.getElementById('onboarding-overlay').style.display = 'none';
