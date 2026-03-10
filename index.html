@@ -1188,7 +1188,8 @@ function completeOnboarding() {
   saveSettings(s);
   applySettings(s);
   document.getElementById('onboarding-overlay').style.display = 'none';
-  seedDailyTasks();
+  checkDailyReset();
+  scheduleMidnightWatcher();
   renderTodos('daily');
   showToast('Welcome, ' + name + '!');
 }
@@ -1856,9 +1857,13 @@ function saveWorkout() {
 // ─── Init ─────────────────────────────────────────────────────────────────────
 (function() {
   const s = loadSettings();
-  if (s) { applySettings(s); } else { showOnboarding(); }
-  checkDailyReset();
-  scheduleMidnightWatcher();
+  if (s) {
+    applySettings(s);
+    checkDailyReset();
+    scheduleMidnightWatcher();
+  } else {
+    showOnboarding();
+  }
   ['daily','longterm'].forEach(renderTodos);
   renderHealthLog();
   renderMealPrompt();
