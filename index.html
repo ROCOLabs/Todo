@@ -1319,7 +1319,6 @@ function removeOnboardingTask(idx) {
 
 function completeOnboarding() {
   const name = document.getElementById('onboarding-name').value.trim();
-  if (!name) { showToast('Please enter your name'); document.getElementById('onboarding-name').focus(); return; }
   const lang = document.getElementById('onboarding-language').value.trim() || 'French';
   const s = { name: name, recurringTasks: onboardingTasks, quadrant4: { widget: onboardingWidget, language: lang, habits: onboardingHabits } };
   saveSettings(s);
