@@ -1091,6 +1091,19 @@
 </div>
 
 <script>
+// ─── Prevent iOS zoom on input focus ─────────────────────────────────────────
+(function() {
+  var meta = document.querySelector('meta[name="viewport"]');
+  var original = meta.getAttribute('content');
+  var locked = original + ', maximum-scale=1';
+  document.addEventListener('focusin', function(e) {
+    if (e.target.matches('input, textarea, select')) meta.setAttribute('content', locked);
+  });
+  document.addEventListener('focusout', function(e) {
+    if (e.target.matches('input, textarea, select')) meta.setAttribute('content', original);
+  });
+})();
+
 // ─── Dark mode toggle ──────────────────────────────────────────────────────────
 (function() {
   var btn = document.getElementById('dark-toggle');
