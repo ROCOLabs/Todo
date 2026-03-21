@@ -1091,6 +1091,55 @@
 </div>
 
 <script>
+// ─── Touch drag-to-reorder (mobile) ──────────────────────────────────────────
+(function() {
+  let dragging = null, touchKey = null;
+
+  document.addEventListener('touchstart', function(e) {
+    const handle = e.target.closest('.drag-handle');
+    if (!handle) return;
+    e.preventDefault();
+    dragging = handle.closest('.todo-item');
+    touchKey = dragging.dataset.key;
+    dragging.classList.add('dragging');
+  }, { passive: false });
+
+  document.addEventListener('touchmove', function(e) {
+    if (!dragging) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    dragging.style.visibility = 'hidden';
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    dragging.style.visibility = '';
+    const target = el && el.closest('.todo-item');
+    if (!target || target === dragging || target.dataset.key !== touchKey) return;
+    const rect = target.getBoundingClientRect();
+    if (touch.clientY < rect.top + rect.height / 2) {
+      target.parentNode.insertBefore(dragging, target);
+    } else {
+      target.parentNode.insertBefore(dragging, target.nextSibling);
+    }
+  }, { passive: false });
+
+  document.addEventListener('touchend', function() {
+    if (!dragging) return;
+    dragging.classList.remove('dragging');
+    const listEl = dragging.parentNode;
+    const ids = [...listEl.querySelectorAll('.todo-item[data-id]')].map(li => li.dataset.id);
+    const key = touchKey;
+    if (['fri','sat','sun'].includes(key)) {
+      const data = loadWeekendTodos();
+      data[key] = ids.map(id => data[key].find(t => t.id === id)).filter(Boolean);
+      saveWeekendTodos(data); renderWeekendSection(key);
+    } else {
+      const todos = loadTodos(key);
+      saveTodos(key, ids.map(id => todos.find(t => t.id === id)).filter(Boolean));
+      renderTodos(key);
+    }
+    dragging = null; touchKey = null;
+  });
+})();
+
 // ─── Prevent iOS zoom on input focus ─────────────────────────────────────────
 (function() {
   var meta = document.querySelector('meta[name="viewport"]');
@@ -1233,11 +1282,20 @@ function onDrop(e) {
   e.stopPropagation(); this.classList.remove('drag-over');
   const tKey = this.dataset.key, tId = this.dataset.id;
   if (dragSrcKey !== tKey || dragSrcId === tId) return;
-  const todos = loadTodos(tKey);
-  const si = todos.findIndex(t => t.id === dragSrcId), ti = todos.findIndex(t => t.id === tId);
-  if (si === -1 || ti === -1) return;
-  const [moved] = todos.splice(si, 1); todos.splice(ti, 0, moved);
-  saveTodos(tKey, todos); renderTodos(tKey);
+  if (['fri','sat','sun'].includes(tKey)) {
+    const data = loadWeekendTodos();
+    const items = data[tKey];
+    const si = items.findIndex(t => t.id === dragSrcId), ti = items.findIndex(t => t.id === tId);
+    if (si === -1 || ti === -1) return;
+    const [moved] = items.splice(si, 1); items.splice(ti, 0, moved);
+    saveWeekendTodos(data); renderWeekendSection(tKey);
+  } else {
+    const todos = loadTodos(tKey);
+    const si = todos.findIndex(t => t.id === dragSrcId), ti = todos.findIndex(t => t.id === tId);
+    if (si === -1 || ti === -1) return;
+    const [moved] = todos.splice(si, 1); todos.splice(ti, 0, moved);
+    saveTodos(tKey, todos); renderTodos(tKey);
+  }
 }
 
 // ─── Render todos ─────────────────────────────────────────────────────────────
@@ -2115,12 +2173,20 @@ function renderWeekendSection(day) {
   const items = data[day] || [];
   if (!items.length) { list.innerHTML = '<li class="empty-state">Nothing here yet</li>'; return; }
   list.innerHTML = items.map(t => `
-    <li class="todo-item" data-id="${t.id}">
+    <li class="todo-item" draggable="true" data-id="${t.id}" data-key="${day}">
+      <span class="drag-handle" title="Reorder">&#10783;</span>
       <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleWeekendTask('${day}','${t.id}')">
       <span class="todo-text ${t.done ? 'done' : ''}">${escHtml(t.text)}</span>
       <button class="btn-edit" onclick="startEditWeekendTodo('${day}','${t.id}')" title="Edit">✎</button>
       <button class="btn-delete" onclick="deleteWeekendTask('${day}','${t.id}')" title="Delete">×</button>
     </li>`).join('');
+  list.querySelectorAll('.todo-item').forEach(item => {
+    item.addEventListener('dragstart', onDragStart);
+    item.addEventListener('dragover',  onDragOver);
+    item.addEventListener('dragleave', onDragLeave);
+    item.addEventListener('drop',      onDrop);
+    item.addEventListener('dragend',   onDragEnd);
+  });
 }
 
 function handleAddWeekend(e, day) {
