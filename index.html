@@ -2115,9 +2115,10 @@ function renderWeekendSection(day) {
   const items = data[day] || [];
   if (!items.length) { list.innerHTML = '<li class="empty-state">Nothing here yet</li>'; return; }
   list.innerHTML = items.map(t => `
-    <li class="todo-item">
+    <li class="todo-item" data-id="${t.id}">
       <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleWeekendTask('${day}','${t.id}')">
       <span class="todo-text ${t.done ? 'done' : ''}">${escHtml(t.text)}</span>
+      <button class="btn-edit" onclick="startEditWeekendTodo('${day}','${t.id}')" title="Edit">✎</button>
       <button class="btn-delete" onclick="deleteWeekendTask('${day}','${t.id}')" title="Delete">×</button>
     </li>`).join('');
 }
@@ -2187,6 +2188,40 @@ function startEditTodo(key, id) {
   input.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') { e.preventDefault(); save(); }
     if (e.key === 'Escape') { saved = true; renderTodos(key); }
+  });
+  input.addEventListener('blur', save);
+}
+
+function startEditWeekendTodo(day, id) {
+  const li = document.querySelector(`.todo-item[data-id="${id}"]`);
+  if (!li) return;
+  const span = li.querySelector('.todo-text');
+  if (!span) return;
+  const currentText = span.textContent;
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'todo-edit-input';
+  input.value = currentText;
+  span.replaceWith(input);
+  input.focus();
+  input.select();
+
+  let saved = false;
+  function save() {
+    if (saved) return;
+    saved = true;
+    const newText = input.value.trim();
+    if (newText && newText !== currentText) {
+      const data = loadWeekendTodos();
+      const t = data[day].find(t => t.id === id);
+      if (t) { t.text = newText; saveWeekendTodos(data); }
+    }
+    renderWeekendSection(day);
+  }
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); save(); }
+    if (e.key === 'Escape') { saved = true; renderWeekendSection(day); }
   });
   input.addEventListener('blur', save);
 }
