@@ -956,7 +956,7 @@
       </div>
       <div class="settings-section">
         <label class="settings-label">Recurring daily tasks</label>
-        <p class="settings-hint">Tasks that automatically appear on specific days each week. Changes take effect after daily resets at 12am EST.</p>
+        <p class="settings-hint">Tasks that automatically appear on specific days each week. Changes take effect after daily resets at midnight in your time zone.</p>
         <div class="recurring-form">
           <input class="todo-input" id="settings-task-input" placeholder="Task name…" autocomplete="off">
           <div class="day-picker" id="settings-day-picker">
@@ -992,6 +992,38 @@
           <button type="button" class="btn-add" style="background:#6366f1;box-shadow:0 2px 6px rgba(99,102,241,.3);white-space:nowrap" onclick="addSettingsHabit()">Add</button>
         </div>
         <ul class="recurring-list" id="settings-habits-list"></ul>
+      </div>
+      <div class="settings-section">
+        <label class="settings-label">Time zone</label>
+        <p class="settings-hint">Used for midnight task resets and meal time prompts. Auto-detect uses your device's time zone.</p>
+        <select class="todo-input" id="settings-timezone">
+          <option value="">Auto-detect</option>
+          <optgroup label="Americas">
+            <option value="America/New_York">Eastern (ET)</option>
+            <option value="America/Chicago">Central (CT)</option>
+            <option value="America/Denver">Mountain (MT)</option>
+            <option value="America/Los_Angeles">Pacific (PT)</option>
+            <option value="America/Anchorage">Alaska</option>
+            <option value="Pacific/Honolulu">Hawaii</option>
+            <option value="America/Toronto">Toronto</option>
+            <option value="America/Vancouver">Vancouver</option>
+            <option value="America/Sao_Paulo">São Paulo</option>
+          </optgroup>
+          <optgroup label="Europe">
+            <option value="Europe/London">London</option>
+            <option value="Europe/Paris">Paris</option>
+            <option value="Europe/Berlin">Berlin</option>
+            <option value="Europe/Moscow">Moscow</option>
+          </optgroup>
+          <optgroup label="Asia / Pacific">
+            <option value="Asia/Dubai">Dubai</option>
+            <option value="Asia/Kolkata">India (IST)</option>
+            <option value="Asia/Shanghai">China (CST)</option>
+            <option value="Asia/Tokyo">Japan (JST)</option>
+            <option value="Australia/Sydney">Sydney</option>
+            <option value="Pacific/Auckland">Auckland</option>
+          </optgroup>
+        </select>
       </div>
       <div class="settings-section">
         <label class="settings-label">Visible quadrants</label>
@@ -1188,18 +1220,18 @@
 // ─── Time utilities (Eastern Time) ────────────────────────────────────────────
 function today() {
   // Returns YYYY-MM-DD in Eastern Time
-  return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  return new Date().toLocaleDateString('en-CA', { timeZone: getUserTimezone() });
 }
 
 function getETHour() {
   return parseInt(new Date().toLocaleTimeString('en-US', {
-    timeZone: 'America/New_York', hour: '2-digit', hourCycle: 'h23'
+    timeZone: getUserTimezone(), hour: '2-digit', hourCycle: 'h23'
   }), 10);
 }
 
 function getETDayOfWeek() {
   // 0=Sun, 1=Mon, ..., 6=Sat
-  const s = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  const s = new Date().toLocaleDateString('en-CA', { timeZone: getUserTimezone() });
   const [y, m, d] = s.split('-').map(Number);
   return new Date(y, m - 1, d).getDay();
 }
@@ -1348,6 +1380,11 @@ function loadSettings() {
 
 function saveSettings(s) { localStorage.setItem('user_settings', JSON.stringify(s)); }
 
+function getUserTimezone() {
+  const s = loadSettings();
+  return (s && s.timezone) || Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+
 function getInitials(name) {
   return name.trim().split(/\s+/).map(w => w[0] && w[0].toUpperCase()).filter(Boolean).slice(0, 2).join('') || '?';
 }
@@ -1487,6 +1524,10 @@ function openSettings() {
   document.getElementById('toggle-q2').checked = !hidden.includes('quadrant-2');
   document.getElementById('toggle-q3').checked = !hidden.includes('quadrant-3');
   document.getElementById('toggle-q4').checked = !hidden.includes('quadrant-4');
+  const tzSelect = document.getElementById('settings-timezone');
+  tzSelect.value = s.timezone || '';
+  // Update auto-detect label to show current detected timezone
+  tzSelect.options[0].text = 'Auto-detect (' + Intl.DateTimeFormat().resolvedOptions().timeZone + ')';
   document.getElementById('settings-overlay').style.display = 'flex';
 }
 
@@ -1523,7 +1564,8 @@ function saveSettingsAndClose() {
   if (!document.getElementById('toggle-q2').checked) hiddenQuadrants.push('quadrant-2');
   if (!document.getElementById('toggle-q3').checked) hiddenQuadrants.push('quadrant-3');
   if (!document.getElementById('toggle-q4').checked) hiddenQuadrants.push('quadrant-4');
-  const s = { name: name, recurringTasks: settingsTasks, quadrant4: { widget: settingsWidget, language: lang, habits: settingsHabits }, hiddenQuadrants: hiddenQuadrants };
+  const timezone = document.getElementById('settings-timezone').value;
+  const s = { name: name, recurringTasks: settingsTasks, quadrant4: { widget: settingsWidget, language: lang, habits: settingsHabits }, hiddenQuadrants: hiddenQuadrants, timezone: timezone || null };
   saveSettings(s);
   applySettings(s);
   closeSettings();
@@ -1695,7 +1737,7 @@ function renderHealthLog() {
 
   list.innerHTML = entries.map(e => {
     const time = new Date(e.timestamp).toLocaleTimeString('en-US', {
-      timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', hour12: true
+      timeZone: getUserTimezone(), hour: 'numeric', minute: '2-digit', hour12: true
     });
     const datePrefix = (showingHealthHistory && e.date !== t)
       ? new Date(e.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' · '
@@ -1803,7 +1845,7 @@ function getHabitStreak(habitId) {
   var d = new Date();
   d.setDate(d.getDate() - 1);
   while (true) {
-    var ds = d.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+    var ds = d.toLocaleDateString('en-CA', { timeZone: getUserTimezone() });
     if (log[ds] && log[ds][habitId]) { streak++; d.setDate(d.getDate() - 1); }
     else break;
   }
@@ -1864,14 +1906,14 @@ function renderSpending() {
   var todayEntries = log.filter(function(e) { return e.date === t; }).reverse();
   var todayTotal = todayEntries.reduce(function(sum, e) { return sum + e.amount; }, 0);
   var weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
-  var weekStr = weekAgo.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  var weekStr = weekAgo.toLocaleDateString('en-CA', { timeZone: getUserTimezone() });
   var weekTotal = log.filter(function(e) { return e.date >= weekStr; }).reduce(function(sum, e) { return sum + e.amount; }, 0);
   totalsEl.innerHTML =
     '<div class="spending-total-box"><div class="spending-total-label">Today</div><div class="spending-total-amount">$' + todayTotal.toFixed(2) + '</div></div>' +
     '<div class="spending-total-box"><div class="spending-total-label">This week</div><div class="spending-total-amount">$' + weekTotal.toFixed(2) + '</div></div>';
   if (!todayEntries.length) { listEl.innerHTML = '<li class="spending-empty">Nothing logged today</li>'; return; }
   listEl.innerHTML = todayEntries.map(function(e) {
-    var time = new Date(e.timestamp).toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', hour12: true });
+    var time = new Date(e.timestamp).toLocaleTimeString('en-US', { timeZone: getUserTimezone(), hour: 'numeric', minute: '2-digit', hour12: true });
     return '<li class="spending-item">' +
       '<span class="spending-amount">$' + e.amount.toFixed(2) + '</span>' +
       '<span class="spending-desc">' + (e.description ? escHtml(e.description) : '<span style="opacity:.4">—</span>') + '</span>' +
@@ -1929,7 +1971,7 @@ function markPractice() {
   const s = loadStreak(), t = today();
   if (s.lastDate === t) return;
   const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-  const yStr = yesterday.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  const yStr = yesterday.toLocaleDateString('en-CA', { timeZone: getUserTimezone() });
   s.count = (s.lastDate === yStr) ? s.count + 1 : 1;
   s.lastDate = t; saveStreak(s); renderStreak();
 }
@@ -2027,7 +2069,7 @@ function closeQuiz() {
 (function() {
   const el = document.getElementById('header-date');
   if (el) el.textContent = new Date().toLocaleDateString('en-US', {
-    timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+    timeZone: getUserTimezone(), weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
   });
 })();
 
@@ -2044,10 +2086,10 @@ function openWorkoutHistory() {
     el.innerHTML = sessions.map(s => {
       const d = new Date(s.timestamp);
       const dateStr = d.toLocaleDateString('en-US', {
-        timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+        timeZone: getUserTimezone(), weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
       });
       const timeStr = d.toLocaleTimeString('en-US', {
-        timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', hour12: true
+        timeZone: getUserTimezone(), hour: 'numeric', minute: '2-digit', hour12: true
       });
       const rows = s.exercises.map(e => `
         <tr>
